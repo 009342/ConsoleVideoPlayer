@@ -14,6 +14,7 @@ namespace ConsoleVideoPlayer
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("https://github.com/009342/ConsoleVideoPlayer");
             if (args.Length == 0) return;
             //video : music
             bool isSound = true;
