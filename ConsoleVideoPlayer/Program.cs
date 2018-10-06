@@ -102,30 +102,6 @@ namespace ConsoleVideoPlayer
                 bm = Frames[tempIndex];
                 if (bm == null) break;
                 Console.Title = "현재 프레임 : " + vfr.CurrentFrame.ToString() + " 제거된 프레임 : " + disposedFrame + " 시간 : " + ((audioFileReader.CurrentTime.TotalMilliseconds / 1000)).ToString() + "초당 프레임 : " + fps.ToString();
-                #region deletedCodes
-                /*
-                Size resize = new Size(c_width, c_height);
-                Bitmap resized = new Bitmap(bm, resize); //평균값 구하는거 시간도 걸리고 귀찮으니 걍 리사이즈 해버립시다.
-                if (isSound) wo.Play();
-                //Console.Title = "4";
-
-                for (int l = 0; l < c_height; l++)//
-                {
-                    for (int c = 0; c < c_width; c++)
-                    {
-                        //Console.BackgroundColor = ClosestConsoleColor(AverageColor(bm, c, l, b_width, b_height));
-                        Console.BackgroundColor = ClosestConsoleColor(resized.GetPixel(c, l));
-                        Console.Write(" ");
-                    }
-                    //Console.WriteLine();
-                }
-                //Console.Title = "5";
-                Console.SetCursorPosition(0, 0);
-                //Console.Title = "6";
-                bm.Dispose();
-                resized.Dispose();
-                */
-                #endregion
                 Console.SetCursorPosition(0, 0);
                 //Console.Title = "콘솔 출력중...";
 
@@ -140,25 +116,6 @@ namespace ConsoleVideoPlayer
             videoDecoderThread.Abort();
             frameDisposerThread.Abort();
         }
-        /*static Color AverageColor(Bitmap bm, int col, int lin, int b_width, int b_height)
-        {
-            int R = 0;
-            int G = 0;
-            int B = 0;
-            int count = 0;
-            for (int x = col * b_width; x < (col + 1) * b_width; x++)
-            {
-                for (int y = lin * b_height; y < (lin + 1) * b_height; y++)
-                {
-                    count++;
-                    R += bm.GetPixel(x, y).R;
-                    G += bm.GetPixel(x, y).G;
-                    B += bm.GetPixel(x, y).B;
-                }
-            }
-            Color c = Color.FromArgb(R / count, G / count, B / count);
-            return c;
-        }*/
 
         static ConsoleColor ClosestConsoleColor(Color color)
         {
@@ -184,61 +141,6 @@ namespace ConsoleVideoPlayer
             }
             return ret;
         }
-        #region otherCodes
-        static int[] cColors = { 0x000000, 0x000080, 0x008000, 0x008080, 0x800000, 0x800080, 0x808000, 0xC0C0C0, 0x808080, 0x0000FF, 0x00FF00, 0x00FFFF, 0xFF0000, 0xFF00FF, 0xFFFF00, 0xFFFFFF };
-
-        public static void ConsoleWritePixel(Color cValue)
-        {
-            Color[] cTable = cColors.Select(x => Color.FromArgb(x)).ToArray();
-            char[] rList = new char[] { '░', ' ', '▓', '█' }; // 1/4, 2/4, 3/4, 4/4
-            int[] bestHit = new int[] { 0, 0, 4, int.MaxValue }; //ForeColor, BackColor, Symbol, Score
-
-            for (int rChar = rList.Length; rChar > 0; rChar--)
-            {
-                for (int cFore = 0; cFore < cTable.Length; cFore++)
-                {
-                    for (int cBack = 0; cBack < cTable.Length; cBack++)
-                    {
-                        int R = (cTable[cFore].R * rChar + cTable[cBack].R * (rList.Length - rChar)) / rList.Length;
-                        int G = (cTable[cFore].G * rChar + cTable[cBack].G * (rList.Length - rChar)) / rList.Length;
-                        int B = (cTable[cFore].B * rChar + cTable[cBack].B * (rList.Length - rChar)) / rList.Length;
-                        int iScore = (cValue.R - R) * (cValue.R - R) + (cValue.G - G) * (cValue.G - G) + (cValue.B - B) * (cValue.B - B);
-                        if (!(rChar > 1 && rChar < 4 && iScore > 50000)) // rule out too weird combinations
-                        {
-                            if (iScore < bestHit[3])
-                            {
-                                bestHit[3] = iScore; //Score
-                                bestHit[0] = cFore;  //ForeColor
-                                bestHit[1] = cBack;  //BackColor
-                                bestHit[2] = rChar;  //Symbol
-                            }
-                        }
-                    }
-                }
-            }
-            Console.ForegroundColor = (ConsoleColor)bestHit[0];
-            Console.BackgroundColor = (ConsoleColor)bestHit[1];
-            Console.Write(rList[bestHit[2] - 1]);
-        }
-
-
-        public static void ConsoleWriteImage(Bitmap source)
-        {
-            int sMax = 89;
-            decimal percent = Math.Min(decimal.Divide(sMax, source.Width), decimal.Divide(sMax, source.Height));
-            Size dSize = new Size((int)(source.Width * percent), (int)(source.Height * percent));
-            Bitmap bmpMax = new Bitmap(source, dSize.Width * 2, dSize.Height);
-            for (int i = 0; i < dSize.Height; i++)
-            {
-                for (int j = 0; j < dSize.Width; j++)
-                {
-                    ConsoleWritePixel(bmpMax.GetPixel(j * 2, i));
-                    ConsoleWritePixel(bmpMax.GetPixel(j * 2 + 1, i));
-                }
-                System.Console.WriteLine();
-            }
-            Console.ResetColor();
-        }
         public static void ConsoleWriteImage2(Bitmap bmpSrc)
         {
             int sMax = size;
@@ -254,32 +156,7 @@ namespace ConsoleVideoPlayer
             };*/
             Bitmap bmpMin = new Bitmap(bmpSrc, resSize.Width, resSize.Height);
             Bitmap bmpMax = new Bitmap(bmpSrc, resSize.Width * 2, resSize.Height * 2);
-#if FALSE
-                        for (int i = 0; i < resSize.Height; i++)
-            {
-                /*for (int j = 0; j < resSize.Width; j++)
-                {
-                    Console.ForegroundColor = (ConsoleColor)ToConsoleColor(bmpMin.GetPixel(j, i));
-                    Console.Write("██");
-                }
 
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.Write("    ");
-                */
-                for (int j = 0; j < resSize.Width; j++)
-                {
-                    //Console.ForegroundColor = ClosestConsoleColor(bmpMax.GetPixel(j * 2, i * 2));
-                    //Console.BackgroundColor = ClosestConsoleColor(bmpMax.GetPixel(j * 2, i * 2 + 1));
-                    //Console.Write("▀");
-                    VTConsole.Write("▀", bmpMax.GetPixel(j * 2, i * 2), bmpMax.GetPixel(j * 2, i * 2 + 1));
-                    //Console.ForegroundColor = ClosestConsoleColor(bmpMax.GetPixel(j * 2 + 1, i * 2));
-                    //Console.BackgroundColor = ClosestConsoleColor(bmpMax.GetPixel(j * 2 + 1, i * 2 + 1));
-                    //Console.Write("▀");
-                    VTConsole.Write("▀", bmpMax.GetPixel(j * 2 + 1, i * 2), bmpMax.GetPixel(j * 2 + 1, i * 2 + 1));
-                }
-                System.Console.WriteLine();
-            }
-#endif
 
 
             var builder = new StringBuilder((resSize.Width + 1) * resSize.Height);
@@ -304,8 +181,6 @@ namespace ConsoleVideoPlayer
             var bytes = Encoding.UTF8.GetBytes(builder.ToString());
             VTConsole.WriteFast(bytes);
         }
-
-        #endregion
         public static void VideoDecoderThread(VideoFileReader vfr, double fps)
         {
             while (true)
